@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  talker:
+    image: osrf/ros:humble-desktop
+    container_name: talker
+    network_mode: host
+    # user: "${USER_ID}:${GROUP_ID}"
+    # user: 1001
+    # ipc: host
+    # pid: host
+    volumes:
+      - ./config/:/config/
+      - /dev/shm:/dev/shm
+    privileged : true
+    working_dir: /home/dev/
+    environment:
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ROS_DOMAIN_ID=3
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/config/rtps_config.xml
+    command: >
+      bash -c "
+              source /opt/ros/humble/setup.bash
+              ros2 run demo_nodes_cpp talker
+              "
+  listener:
+    image: osrf/ros:humble-desktop
+    container_name: listener
+    # user: "${USER_ID}:${GROUP_ID}"
+    network_mode: host
+    # user: 1001
+    # ipc: host
+    # pid: host
+    volumes:
+      - ./config/:/config/
+      - /dev/shm:/dev/shm
+    privileged : true
+    working_dir: /home/dev/
+    environment:
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ROS_DOMAIN_ID=3
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/config/rtps_config.xml
+    command: >
+      bash -c "
+              source /opt/ros/humble/setup.bash
+              ros2 run demo_nodes_cpp listener
+              "
